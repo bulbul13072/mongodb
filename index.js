@@ -13,15 +13,28 @@ const dbUser ='bulbulDb';
 const pass = 'jND6YxpByQyJlp4y';
 const uri = "mongodb+srv://bulbulDb:jND6YxpByQyJlp4y@cluster0-v1qtx.mongodb.net/test?retryWrites=true&w=majority";
 
-const client = new MongoClient(uri, { useNewUrlParser: true });
+let client = new MongoClient(uri, { useNewUrlParser: true });
 
 
 const users =["Bulbul", "Shakil", "Babul", "Sumi", "Shahana", "Sanjida"];
 
 
-app.get('/', (req, res) => {
-    const fruit = {product: "Mango", Price: 200}
-    res.send(fruit);
+app.get('/products', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        // perform actions on the collection object
+        collection.find().toArray((err, documents) => {
+            if(err){
+                console.log(err)
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(documents);
+            }
+        });
+        client.close();
+        });
 });
 
 app.get('/fruits/apple', (req, res)=> {
@@ -37,11 +50,9 @@ app.get('/users/:id', (req, res)=>{
 //post
 
 app.post('/addProduct', (req, res)=> {
+        client = new MongoClient(uri, { useNewUrlParser: true });
         //you can save to database
         const product =req.body;
-        
-        console.log(product);
-
         client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
         // perform actions on the collection object
