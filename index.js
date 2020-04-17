@@ -24,7 +24,7 @@ app.get('/products', (req, res) => {
     client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
         // perform actions on the collection object
-        collection.find().toArray((err, documents) => {
+        collection.find({name: "Mobile"}).limit(10).toArray((err, documents) => {
             if(err){
                 console.log(err)
                 res.status(500).send({message:err});
