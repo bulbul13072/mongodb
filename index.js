@@ -8,21 +8,15 @@ require('dotenv').config();
 app.use(cors());
 app.use(bodyParser.json());
 
-
-
 const uri = process.env.DB_PATH;
-
 let client = new MongoClient(uri, { useNewUrlParser: true });
 
-
-const users =["Bulbul", "Shakil", "Babul", "Sumi", "Shahana", "Sanjida"];
 
 
 app.get('/products', (req, res) => {
     client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
-        // perform actions on the collection object
         collection.find(/* you can use any filter here like that {name: "Mobile"}*/).toArray((err, documents) => {
             if(err){
                 console.log(err)
@@ -35,10 +29,6 @@ app.get('/products', (req, res) => {
         client.close();
         });
 });
-
-app.get('/fruits/apple', (req, res)=> {
-    res.send({fruit: "apple", Quantity: 1000, Price: 10000});
-})
 
 app.get('/product/:key', (req, res)=>{
     const key = req.params.key;
@@ -76,14 +66,11 @@ app.post('/getProductByKey', (req, res)=>{
             }
             });
             client.close();
-        });
-    
+        });   
 });
-//post
 
 app.post('/addProduct', (req, res)=> {
         client = new MongoClient(uri, { useNewUrlParser: true });
-        //you can save to database
         const product =req.body;
         client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
@@ -106,11 +93,9 @@ app.post('/placeOrder', (req, res)=> {
     orderDetails.orderTime = new Date();
     console.log(orderDetails);
     client = new MongoClient(uri, { useNewUrlParser: true });
-    //you can save to database
     client.connect(err => {
     const collection = client.db("onlineStore").collection("orders");
-    // perform actions on the collection object
-    collection.insertOne(product, (err, result) => {
+    collection.insertOne(orderDetails, (err, result) => {
         if(err){
             console.log(err)
             res.status(500).send({message:err});
@@ -122,7 +107,6 @@ app.post('/placeOrder', (req, res)=> {
     client.close();
     });
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=> console.log("listening to port 3000"));
